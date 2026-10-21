@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carved in Time — Indian Art History Timeline</title>
+<meta name="description" content="An interactive timeline exploring Indian art history, artifacts, and cultural heritage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo:#54202A;
+    --ivory:#FFF7E8;
+    --vermillion:#7D2635;
+    --turmeric:#B88A32;
+    --slate:#30251F;
+    --paper:#F8F1E4;
+    --line:#D5BE91;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(179,63,46,0.05), transparent 40%),
+      radial-gradient(circle at 85% 92%, rgba(27,42,74,0.06), transparent 40%);
+    color:var(--slate);
+    font-family:"Work Sans",sans-serif;
+  }
+  header{
+    padding:56px 24px 40px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+    background:var(--indigo);
+    color:var(--ivory);
+    position:relative;
+  }
+  header::after{
+    content:"";
+    position:absolute;left:0;right:0;bottom:-6px;height:6px;
+    background:repeating-linear-gradient(90deg,var(--turmeric) 0 18px, transparent 18px 24px);
+  }
+  header h1{
+    font-family:"Marcellus",serif;
+    font-weight:400;
+    font-size:clamp(28px,4vw,44px);
+    margin:0 0 10px;
+    letter-spacing:.5px;
+  }
+  header p{
+    margin:0;
+    max-width:560px;
+    margin-inline:auto;
+    color:#d9cfae;
+    font-size:15px;
+    line-height:1.6;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:60px 20px 90px;position:relative}
+  .spine{
+    position:absolute;
+    left:50%;top:0;bottom:0;
+    width:2px;
+    background:linear-gradient(var(--line),var(--line)) center/2px 100% no-repeat;
+    transform:translateX(-1px);
+  }
+  .row{
+    display:grid;
+    grid-template-columns:1fr 60px 1fr;
+    align-items:start;
+    margin-bottom:56px;
+    position:relative;
+  }
+  .row:nth-child(even) .card{grid-column:3}
+  .row:nth-child(odd) .card{grid-column:1}
+  .medallion{
+    grid-column:2;
+    width:52px;height:52px;
+    border-radius:50%;
+    background:var(--paper);
+    border:2px solid var(--vermillion);
+    display:flex;align-items:center;justify-content:center;
+    z-index:2;
+    box-shadow:0 0 0 6px var(--paper);
+  }
+  .medallion svg{width:26px;height:26px}
+  .card{
+    background:var(--ivory);
+    border:1px solid var(--line);
+    padding:22px 24px;
+    position:relative;
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease;
+    clip-path:polygon(0 6px,6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%);
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(43,38,32,.15)}
+  .row:nth-child(odd) .card{text-align:right}
+  .era{
+    font-family:"Marcellus",serif;
+    color:var(--vermillion);
+    font-size:13px;
+    letter-spacing:.4px;
+    margin-bottom:4px;
+  }
+  .card h2{
+    font-family:"Marcellus",serif;
+    font-weight:400;
+    font-size:21px;
+    margin:0 0 6px;
+    color:var(--indigo);
+  }
+  .card .type{font-size:12.5px;color:#7a6f57;margin:0 0 10px;font-style:italic}
+  .card p.desc{margin:0;font-size:14.5px;line-height:1.55;color:var(--slate)}
+  .prompt{font-size:12.5px;color:var(--turmeric);margin-top:10px;font-weight:600}
+
+  .modal{display:none;position:fixed;inset:0;background:rgba(27,20,12,.6);align-items:center;justify-content:center;padding:20px;z-index:10}
+  .modalbox{max-width:640px;width:100%;background:var(--paper);padding:34px 34px 30px;position:relative;max-height:86vh;overflow:auto;border-top:5px solid var(--vermillion)}
+  .close{position:absolute;right:20px;top:14px;font-size:24px;cursor:pointer;color:var(--slate);line-height:1}
+  .modalbox h2{font-family:"Marcellus",serif;color:var(--indigo);margin:6px 0 2px;font-size:26px}
+  .modalbox .myear{color:var(--vermillion);font-size:13px;margin-bottom:18px}
+  .modalbox h3{font-family:"Marcellus",serif;font-size:15px;color:var(--turmeric);margin:22px 0 6px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .modalbox p{font-size:14.5px;line-height:1.65;margin:0}
+  .tags{margin-top:16px}
+  .tags span{display:inline-block;border:1px solid var(--vermillion);color:var(--vermillion);padding:4px 12px;margin:3px 6px 0 0;font-size:12px}
+
+  footer{text-align:center;padding:26px;color:#8a7e63;font-size:13px;background:var(--indigo)}
+  footer span{color:var(--ivory)}
+
+
+  .team-section{
+    max-width:980px;margin:0 auto 70px;padding:0 20px;
+  }
+  .team-panel{
+    background:var(--ivory);border:1px solid var(--line);
+    padding:30px;border-top:5px solid var(--turmeric);
+    box-shadow:0 10px 28px rgba(48,37,31,.07);
+  }
+  .team-section h2{
+    font-family:"Marcellus",serif;font-weight:400;text-align:center;
+    color:var(--indigo);font-size:clamp(24px,3vw,32px);margin:0 0 8px;
+  }
+  .team-intro{text-align:center;color:#7a6f57;margin:0 0 24px;font-size:14px}
+  .team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .team-member{
+    border:1px solid var(--line);background:var(--paper);padding:16px 18px;
+    display:flex;align-items:center;gap:13px;min-width:0;
+  }
+  .team-number{
+    display:flex;align-items:center;justify-content:center;flex:0 0 38px;height:38px;
+    border-radius:50%;background:var(--indigo);color:var(--ivory);
+    font-family:"Marcellus",serif;font-size:16px;
+  }
+  .team-name{font-family:"Marcellus",serif;color:var(--indigo);font-size:16px;margin-bottom:4px}
+  .team-reg{font-size:12px;color:#7a6f57;overflow-wrap:anywhere}
+  @media(max-width:560px){.team-grid{grid-template-columns:1fr}.team-panel{padding:22px 16px}}
+
+  @media(max-width:720px){
+    .row{grid-template-columns:44px 1fr;margin-bottom:40px}
+    .medallion{grid-column:1;width:40px;height:40px}
+    .medallion svg{width:20px;height:20px}
+    .row:nth-child(odd) .card,.row:nth-child(even) .card{grid-column:2;text-align:left}
+    .spine{left:22px;transform:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Carved in Time</h1>
+  <p>Explore India’s artistic heritage across the centuries — from prehistoric rock art to paintings, sculptures, and monumental architecture. Select any artifact to discover its story.</p>
+</header>
+
+<div class="wrap">
+  <div class="spine"></div>
+  <div id="rows"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalbox">
+    <div class="close" onclick="closeModal()">&times;</div>
+    <h2 id="mtitle"></h2>
+    <div class="myear" id="myear"></div>
+    <p id="mdesc"></p>
+    <h3>Historical Context</h3>
+    <p id="mcontext"></p>
+    <h3>Why It Matters</h3>
+    <p id="mwhy"></p>
+    <div class="tags" id="mtags"></div>
+  </div>
+</div>
+
+
+<section class="team-section" aria-labelledby="team-title">
+  <div class="team-panel">
+    <h2 id="team-title">Project Team</h2>
+    <p class="team-intro">Interactive Timeline with Artifacts · CO1</p>
+    <div class="team-grid">
+      <div class="team-member"><div class="team-number">01</div><div><div class="team-name">JOEL JOHN</div><div class="team-reg">RA2411003010735</div></div></div>
+      <div class="team-member"><div class="team-number">02</div><div><div class="team-name">JASWANTH</div><div class="team-reg">RA2411003010733</div></div></div>
+      <div class="team-member"><div class="team-number">03</div><div><div class="team-name">PUNEETH REDDY</div><div class="team-reg">RA2411003010763</div></div></div>
+      <div class="team-member"><div class="team-number">04</div><div><div class="team-name">JENISH</div><div class="team-reg">RA2411003010732</div></div></div>
+      <div class="team-member"><div class="team-number">05</div><div><div class="team-name">JERISH</div><div class="team-reg">RA2411003010762</div></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>CLA&#8209;I Assignment &bull; CO1 &bull; <span>Interactive Timeline with Artifacts</span></footer>
+
+<script>
+const items = [
+{
+  year:"c. 8000–2000 BCE", title:"Bhimbetka Rock Shelters", type:"Prehistoric rock art",
+  desc:"Layered ochre and white paintings of hunts, dancers and animals cover the walls of natural sandstone shelters in central India.",
+  context:"Painted and repainted across many centuries by successive hunter-gatherer and early agricultural communities, Bhimbetka preserves one of the longest continuous visual records anywhere in the world.",
+  why:"It is the starting point of an Indian visual tradition — proof that image-making here predates writing, cities and organised religion by millennia.",
+  tags:["Prehistoric","Rock Art","Madhya Pradesh"],
+  icon:`<svg viewBox="0 0 60 60"><path d="M4 44 Q10 14 30 10 Q50 14 56 44 Z" fill="none" stroke="#B33F2E" stroke-width="2.5"/><circle cx="24" cy="34" r="2" fill="#B33F2E"/><path d="M24 36 L24 44 M24 39 L18 43 M24 39 L30 34" stroke="#B33F2E" stroke-width="2" fill="none"/><path d="M38 40 Q36 32 42 32 Q46 32 44 40" stroke="#B33F2E" stroke-width="2" fill="none"/></svg>`
+},
+{
+  year:"c. 250 BCE", title:"Sarnath Lion Capital", type:"Mauryan stone sculpture",
+  desc:"Four back-to-back lions crown a polished sandstone pillar, standing above a wheel and a frieze of animals, originally erected by Ashoka.",
+  context:"The pillar marked the site of the Buddha's first sermon and belongs to a series Ashoka raised across his empire, inscribed with edicts on ethical rule.",
+  why:"Its glass-like Mauryan polish and confident animal carving mark the emergence of a mature royal stone-working tradition in India — later adopted as the national emblem.",
+  tags:["Mauryan","Stone Sculpture","Ashoka"],
+  icon:`<svg viewBox="0 0 60 60"><rect x="27" y="26" width="6" height="24" fill="#B33F2E"/><ellipse cx="30" cy="26" rx="16" ry="5" fill="none" stroke="#B33F2E" stroke-width="2"/><path d="M20 22 Q24 12 30 14 Q36 12 40 22" fill="none" stroke="#B33F2E" stroke-width="2.5"/><circle cx="24" cy="19" r="1.6" fill="#B33F2E"/><circle cx="36" cy="19" r="1.6" fill="#B33F2E"/><circle cx="30" cy="40" r="5" fill="none" stroke="#B33F2E" stroke-width="1.5"/></svg>`
+},
+{
+  year:"1st c. BCE – 1st c. CE", title:"Sanchi Stupa Toranas", type:"Buddhist relief sculpture",
+  desc:"Four elaborately carved gateways frame the Great Stupa, their crossbars filled with jataka tales, yakshis and processions in deep relief.",
+  context:"Built up over Mauryan, Shunga and Satavahana patronage, Sanchi shows how a simple burial mound grew into a fully narrated architectural monument.",
+  why:"The toranas are an early masterclass in visual storytelling — packing entire narratives into stone panels for pilgrims who could not read.",
+  tags:["Buddhist Art","Relief Sculpture","Sanchi"],
+  icon:`<svg viewBox="0 0 60 60"><rect x="12" y="16" width="4" height="34" fill="#B33F2E"/><rect x="44" y="16" width="4" height="34" fill="#B33F2E"/><rect x="10" y="14" width="40" height="4" fill="#B33F2E"/><rect x="10" y="22" width="40" height="3" fill="#B33F2E"/><rect x="10" y="29" width="40" height="3" fill="#B33F2E"/><circle cx="30" cy="18" r="2" fill="#B33F2E"/></svg>`
+},
+{
+  year:"c. 5th century CE", title:"Seated Buddha of Sarnath", type:"Gupta classical sculpture",
+  desc:"A serene sandstone Buddha, hands turning the wheel of law, framed by a halo carved with lotus and flame motifs.",
+  context:"Made under Gupta patronage, this figure defines the era's ideal of restrained, meditative beauty — a style exported along trade routes across Asia.",
+  why:"It sets the classical template for the Buddha image itself: the proportions, the drapery, the inward calm later art across Asia would keep returning to.",
+  tags:["Gupta","Buddhist Sculpture","Sarnath"],
+  icon:`<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="20" fill="none" stroke="#B33F2E" stroke-width="1.4" stroke-dasharray="2 3"/><circle cx="30" cy="22" r="7" fill="#B33F2E"/><path d="M22 46 Q30 32 38 46 Q30 50 22 46Z" fill="#B33F2E"/></svg>`
+},
+{
+  year:"7th–8th century", title:"Shore Temple &amp; Rathas, Mahabalipuram", type:"Pallava rock-cut architecture",
+  desc:"Entire temples — the five monolithic rathas and the granite Shore Temple — carved directly from single boulders and coastal rock.",
+  context:"Pallava kings used this port town to experiment with translating timber temple forms into permanent stone, right beside the working shore.",
+  why:"It captures architecture at the moment of invention — carving a building downward out of solid rock rather than building one upward.",
+  tags:["Pallava","Rock-cut","Tamil Nadu"],
+  icon:`<svg viewBox="0 0 60 60"><path d="M14 46 L20 26 L26 46Z" fill="#B33F2E"/><path d="M24 46 L32 18 L40 46Z" fill="#B33F2E" opacity=".85"/><path d="M38 46 L44 28 L50 46Z" fill="#B33F2E" opacity=".7"/><line x1="8" y1="48" x2="54" y2="48" stroke="#B33F2E" stroke-width="1.5"/></svg>`
+},
+{
+  year:"17th–18th century", title:"Thanjavur Painting", type:"South Indian devotional painting",
+  desc:"Dense, glowing panels of Hindu deities built up with gesso relief, gold leaf and inset glass beads on a wooden base.",
+  context:"Patronised by the Maratha court of Thanjavur, the style fused Vijayanagar-Nayaka painting traditions with new materials arriving through coastal trade.",
+  why:"It shows Indian painting turning toward opulence and material richness — the image as jewel-like devotional object, not just illustration.",
+  tags:["Tanjore","Gold Leaf","Devotional Art"],
+  icon:`<svg viewBox="0 0 60 60"><rect x="14" y="10" width="32" height="40" rx="16" fill="none" stroke="#C98A2B" stroke-width="2"/><circle cx="30" cy="26" r="8" fill="#C98A2B"/><path d="M22 46 Q30 36 38 46" stroke="#C98A2B" stroke-width="2" fill="none"/><circle cx="30" cy="14" r="2" fill="#C98A2B"/></svg>`
+},
+{
+  year:"1905", title:"Bharat Mata, Bengal School", type:"Swadeshi nationalist painting",
+  desc:"Abanindranath Tagore's watercolour wash portrays the nation as a serene four-armed goddess, holding a book, sheaves, cloth and a rosary.",
+  context:"Painted during the anti-Partition Swadeshi movement, it deliberately rejected European oil-painting realism in favour of a soft, Mughal-and-Japanese-inflected wash technique.",
+  why:"A single canvas became a political symbol — showing how the Bengal School used gentle, indigenous aesthetics to imagine and mobilise a nation.",
+  tags:["Bengal School","Nationalism","Watercolour"],
+  icon:`<svg viewBox="0 0 60 60"><circle cx="30" cy="20" r="8" fill="none" stroke="#1B2A4A" stroke-width="2"/><path d="M30 28 L30 46 M30 33 L18 30 M30 33 L42 30 M30 33 L14 40 M30 33 L46 40" stroke="#1B2A4A" stroke-width="2" fill="none"/><circle cx="30" cy="14" r="10" fill="none" stroke="#C98A2B" stroke-width="1"/></svg>`
+}
+];
+
+const rows = document.getElementById("rows");
+items.forEach((x,i)=>{
+  const row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML = `
+    <div class="medallion">${x.icon}</div>
+    <div class="card">
+      <div class="era">${x.year}</div>
+      <h2>${x.title}</h2>
+      <p class="type">${x.type}</p>
+      <p class="desc">${x.desc}</p>
+      <div class="prompt">Tap to read more &rarr;</div>
+    </div>`;
+  row.querySelector(".card").onclick = () => openModal(i);
+  rows.appendChild(row);
+});
+
+function openModal(i){
+  const x = items[i];
+  document.getElementById("modal").style.display = "flex";
+  mtitle.textContent = x.title;
+  myear.textContent = x.year + " · " + x.type;
+  mdesc.textContent = x.desc;
+  mcontext.textContent = x.context;
+  mwhy.textContent = x.why;
+  mtags.innerHTML = x.tags.map(t=>`<span>${t}</span>`).join("");
+}
+function closeModal(){ document.getElementById("modal").style.display = "none"; }
+window.onclick = e => { if(e.target.id === "modal") closeModal(); };
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeModal(); });
+</script>
+</body>
+</html>
